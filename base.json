@@ -1,0 +1,6 @@
+{
+    "bus":[
+        {"rtico":"True","direction":"kigali to muhanga","time":"19:30pm","plate":"RAE716K","seats":72,"price":1550,"tickets":72},
+        {"volocanal":"True","direction":"kigali to muhanga","time":"19:35pm","plate":"RAE616K","seats":30,"price":1550,"tickets":30}
+    ]
+}

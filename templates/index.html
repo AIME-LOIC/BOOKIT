@@ -1,11 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOOKIT</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+    }
+
+    header {
+      background: #87ceeb;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #logo img {
+      height: 200px;
+      object-fit: contain;
+    }
+
+    #main {
+      margin-top: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #bus {
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    #select {
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #4CAF50;
+      border-radius: 6px;
+      width: 250px;
+    }
+
+    #select:focus {
+      outline: none;
+      border-color: #388e3c;
+    }
+  </style>
 </head>
 <body>
-    <h1>HELLO WORLD</h1>
+  <header>
+    <div id="logo">
+      <img src="/static/download.png" alt="BOOKIT Logo">
+    </div>
+  </header>
+
+  <div id="main">
+    <div id="bus">
+      <select name="" id="select">
+        <option value="" selected disabled>Choose a company</option>
+      </select>
+    </div>
+  </div>
+
+  <script>
+    fetch("/get_buses")
+     .then(resp => resp.json())
+     .then(data => {
+        let choice = document.getElementById("select");
+        data.bus.forEach(buses => {
+          let company = Object.keys(buses).find(key => buses[key] === "True");
+          if (company) {
+            let option = document.createElement('option');
+            option.value = buses.plate;
+            option.text = `${company}`;
+            choice.appendChild(option);
+          }
+        });
+     });
+  </script>
 </body>
 </html>
