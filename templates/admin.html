@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN-BOOKIT</title>
+    <style>
+         body {
+      background: #f5f5f5;
+    }
+
+    header {
+      background: #87ceeb;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 101%;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+    #logo img {
+      height: 200px;
+      object-fit: contain;
+    }
+    main{
+        margin-top: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    #main{
+        background: rgba(135, 206, 235, 0.3);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        width: 500px;
+        height: 700px;
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    label{
+        margin-top: 20px;
+        font-size: large;
+        text-align:center;
+        margin-bottom: 8px;
+    }
+    input{
+        width: 400px;
+        height: 30px;
+        margin-bottom: 18px;
+    }
+    button{
+        width: 406px;
+        height: 25px;
+        border-radius: 30px;
+    }
+    </style>
+</head>
+<body>
+    <header>
+    <div id="logo">
+      <img src="/static/download.png" alt="BOOKIT Logo">
+    </div>
+  </header>
+  <main>
+ <div id="main">
+    <form action="/add_bus" method="post" id="form">
+        <label for="company_name">company name: </label><br>
+        <input type="text" name="company_name" id="company_name" required><br>
+        <label for="from">bus comes from: </label><br>
+        <input type="text" name="from" id="from" required><br>
+        <label for="to">bus goes to: </label><br>
+        <input type="text" name="to" id="to" required><br>
+        <label for="time">Time to go: </label><br>
+        <input type="time" name="time" id="time" required><br>
+        <label for="date">Date to go: </label><br>
+        
+        <input type="date" name="date" id="date" required><br>
+        <label for="seats">seats: </label><br>
+        <input type="number" name="seats" id="seats" required><br>
+        <label for="price">price: </label><br>
+        <input type="text" name="price" id="price" required><br>
+        <label for="plate">plate id: </label><br>
+        <input type="text" name="plate_id" id="plate_id" required maxlength="7" minlength="7"><br>
+        <br>
+        <button type="submit" id="add">add</button>
+    </form>
+ </div>
+  </main>
+</body>
+<script>
+document.getElementById('form').addEventListener('submit', function(e) {
+    const dateInput = document.getElementById('date').value;
+    const timeInput = document.getElementById('time').value;
+    const now = new Date();
+    const selectedDate = new Date(dateInput + 'T' + timeInput);
+
+    // Check if selected date/time is in the past
+    if (selectedDate < now) {
+        alert('Please select a future date and time.');
+        e.preventDefault();
+    }
+});
+function updates(){
+    let now= new Date();
+    let options ={
+        weekdays :'long',year:'numeric',month:'long',day:'numeric',
+        day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'
+    };
+    document.getElementById('time_now').textContent=now.toLocaleDateString('en-US',options);
+
+}
+updates();
+setInterval(updates,1000);
+document.getElementById('add').onclick=function(event){
+event.preventDefault()
+let form=event.target;
+let data={
+    bus_company:form.company_name.value,
+    from:form.from.value,
+    to:form.to.value,
+    time:form.time.value,
+    date:form.date.value,
+    seats:parseInt(form.seats.value),
+    price:parseInt(form.price.value),
+    plate_id:parseInt(form.plate_id.value)
+};
+let res = fetch('/add_bus',{
+    method:'POST',
+    headers:{
+        'Content-Type':'application/json'
+    },
+    body:JSON.stringify(data)
+});
+let results=res.json();
+alert(results.message);
+form.reset();
+}
+</script>
+</html>

@@ -56,7 +56,7 @@
     #select:focus {
       outline: none;
       border-color: #388e3c;
-      color: rgb(255, 255, 0);
+      color: blue;
     }
   </style>
 </head>
@@ -72,6 +72,7 @@
       <select name="" id="select">
         <option value="" selected disabled>Choose a company</option>
       </select>
+      <button id="next">next</button>
     </div>
   </div>
 
@@ -80,16 +81,25 @@
      .then(resp => resp.json())
      .then(data => {
         let choice = document.getElementById("select");
-        data.bus.forEach(buses => {
-          let company = Object.keys(buses).find(key => buses[key] === "True");
+        data.forEach(buses => {
+          let company = Object.keys(buses).find(key => buses[key] === true);
           if (company) {
             let option = document.createElement('option');
-            option.value = buses.plate;
-            option.text = `${company}`;
+            option.value = buses.plate_id;
+            option.text = `${buses.company_name} - ${buses.plate_id}`;
             choice.appendChild(option);
           }
+          
         });
      });
+     document.getElementById('next').onclick=function(){
+      let plate_id=document.getElementById("select").value;
+      if(!plate_id){
+        alert("Please select a bus");
+        return;
+      }
+      window.location.href=`/book/`+plate_id;
+     }
   </script>
 </body>
 </html>

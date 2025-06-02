@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sit-book</title>
+    <style>
+        * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+    }
+
+    header {
+      background: #87ceeb;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #logo img {
+      height: 200px;
+      object-fit: contain;
+    }
+
+    #main {
+      margin-top: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    </style>
+</head>
+<body>
+<header>
+    <div id="logo">
+      <img src="/static/download.png" alt="BOOKIT Logo">
+    </div>
+</header>
+<main>
+    {% if bus %}
+     <h2>{{ bus.company_name}} ({{bus.from}} &rightarrow; {{bus.to}})</h2>
+     <p>seats {{bus.seats}}</p>
+    {% endif %}
+    <form action="" id="book">
+        <input type="number" name="sits" id="sits" placeholder="Number of Sits" required>
+        <input type="hidden" name="plate_id" id="plate_id" value="{{ bus.plate_id }}">
+        <button type="submit">book</button>
+    </form>
+</main>
+<script>
+    document.getElementById('book').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+        let sits=document.getElementById('sits').value;
+        let plate_id=document.getElementById('plate_id').value;
+        fetch(`/book/${plate_id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ count: sits })
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.success) {
+                alert('Booking successful!');
+                document.querySelector('p').textContent = `Seats left: ${bus.seats}`;
+            } else {
+                alert('Booking failed: ' + data.message);
+            }
+        })
+    });
+</script>
+</body>
+</html>
