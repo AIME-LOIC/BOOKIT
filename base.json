@@ -1,1 +1,13 @@
-[]
+[
+    {
+        "company_name": "ritco",
+        "from": "nyanza",
+        "to": "kigali",
+        "time": "15:55",
+        "date": "2025-06-02",
+        "price": "3000",
+        "plate_id": "RAE100B",
+        "seats": 70,
+        "ready": true
+    }
+]
