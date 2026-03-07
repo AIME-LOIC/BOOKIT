@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BOOKIT</title>
   <style>
     * {
@@ -14,6 +14,7 @@
 
     body {
       background: #f5f5f5;
+      min-height: 100vh;
     }
 
     header {
@@ -23,83 +24,111 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     #logo img {
-      height: 200px;
+      height: 60px;
       object-fit: contain;
     }
 
-    #main {
-      margin-top: 50px;
+    main {
+      padding: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .heading {
+      margin: 1rem 0;
+      text-align: center;
+      font-size: 1.6rem;
+      color: #333;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 1.25rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
       display: flex;
-      justify-content: center;
-      align-items: center;
       flex-direction: column;
+      gap: 0.5rem;
     }
 
-    #bus {
-      background: #fff;
-      padding: 20px 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    .card h3 {
+      margin-bottom: 0.25rem;
+      font-size: 1.2rem;
+      color: #1b3a57;
     }
 
-    #select {
-      padding: 10px;
-      font-size: 16px;
-      border: 2px solid #4CAF50;
-      border-radius: 6px;
-      width: 250px;
+    .card p {
+      color: #444;
+      font-size: 0.95rem;
+      line-height: 1.4;
     }
 
-    #select:focus {
-      outline: none;
-      border-color: #388e3c;
-      color: blue;
+    .card .meta {
+      font-weight: 600;
+      color: #2a6f97;
+    }
+
+    .card button {
+      margin-top: auto;
+      padding: 0.7rem 1rem;
+      border: none;
+      border-radius: 10px;
+      background: #2a6f97;
+      color: #fff;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease;
+    }
+
+    .card button:hover {
+      background: #1f5474;
+      transform: translateY(-1px);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: #555;
+      font-size: 1.1rem;
     }
   </style>
 </head>
 <body>
   <header>
     <div id="logo">
-      <img src="/static/download.png" alt="BOOKIT Logo">
+      <img src="/static/download.png" alt="BOOKIT Logo" />
     </div>
   </header>
 
-  <div id="main">
-    <div id="bus">
-      <select name="" id="select">
-        <option value="" selected disabled>Choose a company</option>
-      </select>
-      <button id="next">next</button>
+  <main>
+    <h1 class="heading">Available Trips</h1>
+    {% if buses and buses|length > 0 %}
+    <div class="cards" id="busCards">
+      {% for bus in buses %}
+      <div class="card">
+        <h3>{{ bus.company_name }}</h3>
+        <p class="meta">{{ bus.from }} → {{ bus.to }}</p>
+        <p><strong>Date:</strong> {{ bus.date }} <strong>Time:</strong> {{ bus.time }}</p>
+        <p><strong>Seats left:</strong> {{ bus.seats }} | <strong>Price:</strong> {{ bus.price }}</p>
+        <button type="button" onclick="window.location.href='/book/{{ bus.plate_id }}'">Book now</button>
+      </div>
+      {% endfor %}
     </div>
-  </div>
-
-  <script>
-    fetch("/get_buses")
-     .then(resp => resp.json())
-     .then(data => {
-        let choice = document.getElementById("select");
-        data.forEach(buses => {
-          let company = Object.keys(buses).find(key => buses[key] === true);
-          if (company) {
-            let option = document.createElement('option');
-            option.value = buses.plate_id;
-            option.text = `${buses.company_name} - ${buses.plate_id}`;
-            choice.appendChild(option);
-          }
-          
-        });
-     });
-     document.getElementById('next').onclick=function(){
-      let plate_id=document.getElementById("select").value;
-      if(!plate_id){
-        alert("Please select a bus");
-        return;
-      }
-      window.location.href=`/book/`+plate_id;
-     }
-  </script>
+    {% else %}
+    <div class="empty">No trips available right now. Please check back later.</div>
+    {% endif %}
+  </main>
 </body>
 </html>

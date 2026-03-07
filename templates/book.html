@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sit-book</title>
-    <style>
-        * {
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BOOKIT - Booking</title>
+  <style>
+    * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -14,6 +14,7 @@
 
     body {
       background: #f5f5f5;
+      min-height: 100vh;
     }
 
     header {
@@ -23,61 +24,173 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     #logo img {
-      height: 200px;
+      height: 60px;
       object-fit: contain;
     }
 
-    #main {
-      margin-top: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+    main {
+      padding: 1.5rem;
+      max-width: 700px;
+      margin: 0 auto;
     }
-    </style>
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card h1 {
+      font-size: 1.4rem;
+      color: #1b3a57;
+    }
+
+    .card p {
+      color: #444;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .meta {
+      font-weight: 600;
+      color: #2a6f97;
+    }
+
+    form {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    input[type='number'] {
+      padding: 0.75rem 0.9rem;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    button {
+      padding: 0.85rem 1rem;
+      border: none;
+      border-radius: 10px;
+      background: #2a6f97;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 120ms ease, transform 120ms ease;
+    }
+
+    button:hover {
+      background: #1f5474;
+      transform: translateY(-1px);
+    }
+
+    .notice {
+      padding: 0.75rem 1rem;
+      background: #ffefc2;
+      border-left: 5px solid #f0b429;
+      border-radius: 10px;
+      color: #533f03;
+    }
+
+    .back {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .back a {
+      color: #2a6f97;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-<header>
+  <header>
     <div id="logo">
-      <img src="/static/download.png" alt="BOOKIT Logo">
+      <img src="/static/download.png" alt="BOOKIT Logo" />
     </div>
-</header>
-<main>
-    {% if bus %}
-     <h2>{{ bus.company_name}} ({{bus.from}} &rightarrow; {{bus.to}})</h2>
-     <p>seats {{bus.seats}}</p>
-    {% endif %}
-    <form action="" id="book">
-        <input type="number" name="sits" id="sits" placeholder="Number of Sits" required>
-        <input type="hidden" name="plate_id" id="plate_id" value="{{ bus.plate_id }}">
-        <button type="submit">book</button>
-    </form>
-</main>
-<script>
-    document.getElementById('book').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the form from submitting normally
-        let sits=document.getElementById('sits').value;
-        let plate_id=document.getElementById('plate_id').value;
-        fetch(`/book/${plate_id}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ count: sits })
-        })
-        .then(resp => resp.json())
-        .then(data => {
-            if (data.success) {
-                alert('Booking successful!');
-                document.querySelector('p').textContent = `Seats left: ${bus.seats}`;
-            } else {
-                alert('Booking failed: ' + data.message);
-            }
-        })
-    });
-</script>
+  </header>
+
+  <main>
+    <div class="card">
+      {% if error %}
+      <div class="notice">{{ error }}</div>
+      {% endif %}
+
+      {% if bus %}
+      <h1>{{ bus.company_name }}</h1>
+      <p class="meta">{{ bus.from }} → {{ bus.to }}</p>
+      <p><strong>Date:</strong> {{ bus.date }} &middot; <strong>Time:</strong> {{ bus.time }}</p>
+      <p><strong>Seats left:</strong> <span id="seatsLeft">{{ bus.seats }}</span> &middot; <strong>Price:</strong> {{ bus.price }}</p>
+
+      <form id="bookForm" autocomplete="off">
+        <input
+          type="number"
+          name="sits"
+          id="sits"
+          placeholder="Seats to book"
+          min="1"
+          max="{{ bus.seats }}"
+          required
+        />
+        <button type="submit">Book now</button>
+      </form>
+      {% else %}
+      <p class="notice">No bus found for this booking link.</p>
+      {% endif %}
+
+      <div class="back">
+        <a href="/">← Back to trips</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const bus = {{ bus|tojson }};
+
+    if (bus) {
+      const form = document.getElementById('bookForm');
+      const seatsLeftEl = document.getElementById('seatsLeft');
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const count = Number(document.getElementById('sits').value);
+
+        if (!count || count < 1) {
+          alert('Please enter a valid number of seats to book.');
+          return;
+        }
+
+        const response = await fetch(`/book/${bus.plate_id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ count }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          seatsLeftEl.textContent = data.seats_left;
+          alert('Booking successful!');
+        } else {
+          alert(`Booking failed: ${data.message}`);
+        }
+      });
+    }
+  </script>
 </body>
 </html>

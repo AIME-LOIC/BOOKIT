@@ -1,13 +1,13 @@
 [
     {
-        "company_name": "ritco",
-        "from": "nyanza",
-        "to": "kigali",
-        "time": "15:55",
-        "date": "2025-06-02",
-        "price": "3000",
-        "plate_id": "RAE100B",
-        "seats": 70,
+        "company_name": "volcano",
+        "from": "kigali",
+        "to": "muhanga",
+        "time": "18:20",
+        "date": "2026-03-07",
+        "price": "1500",
+        "plate_id": "RAE123B",
+        "seats": 27,
         "ready": true
     }
 ]
