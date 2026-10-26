@@ -192,5 +192,18 @@
       });
     }
   </script>
+
+  <footer style="text-align:center;padding:1.25rem 1rem;margin-top:2rem;color:#555;font-size:0.9rem;">
+    <p>&copy; <span id="copyright-year"></span> BOOKIT. All rights reserved.</p>
+  </footer>
+  <script>
+    function updateCopyrightYear() {
+      const yearElement = document.getElementById('copyright-year');
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+      }
+    }
+    updateCopyrightYear();
+  </script>
 </body>
 </html>
